@@ -36,22 +36,16 @@ export function modifyGame(currentCode: string, modification: string): string {
 
   for (const [name, hex] of Object.entries(colorMap)) {
     if (lower.includes(name + ' player') || lower.includes('player ' + name) || lower.includes('character ' + name)) {
-      code = code.replace(/ctx.fillStyle = '(#[0-9a-fA-F]{6})';s*
-s*ctx.fillRect(player/g, 
-        `ctx.fillStyle = '${hex}';
-ctx.fillRect(player`);
+      const playerColorRegex = new RegExp("ctx\\.fillStyle = '(#[0-9a-fA-F]{6})';\\s*\\n\\s*ctx\\.fillRect\\(player", 'g');
+      code = code.replace(playerColorRegex, `ctx.fillStyle = '${hex}';\nctx.fillRect(player`);
     }
     if (lower.includes(name + ' background') || lower.includes('background ' + name)) {
-      code = code.replace(/ctx.fillStyle = '(#[0-9a-fA-F]{6})';s*
-s*ctx.fillRect(0, 0/g,
-        `ctx.fillStyle = '${hex}';
-ctx.fillRect(0, 0`);
+      const bgColorRegex = new RegExp("ctx\\.fillStyle = '(#[0-9a-fA-F]{6})';\\s*\\n\\s*ctx\\.fillRect\\(0, 0", 'g');
+      code = code.replace(bgColorRegex, `ctx.fillStyle = '${hex}';\nctx.fillRect(0, 0`);
     }
     if (lower.includes(name + ' enem') || lower.includes('enem' + name)) {
-      code = code.replace(/ctx.fillStyle = '(#[0-9a-fA-F]{6})';s*
-s*for (const (e|o)/g,
-        (match, color, varName) => `ctx.fillStyle = '${hex}';
-for (const ${varName}`);
+      const enemyColorRegex = new RegExp("ctx\\.fillStyle = '(#[0-9a-fA-F]{6})';\\s*\\n\\s*for \\(const (e|o)", 'g');
+      code = code.replace(enemyColorRegex, (_match, _color, varName) => `ctx.fillStyle = '${hex}';\nfor (const ${varName}`);
     }
     // Generic color change
     if (lower === 'change color to ' + name || lower === 'make it ' + name || lower.includes('color ' + name)) {

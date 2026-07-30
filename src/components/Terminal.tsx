@@ -1,11 +1,13 @@
 
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Terminal = () => {
   const [terminalText, setTerminalText] = useState('');
   const [cursorVisible, setCursorVisible] = useState(true);
   const [animationComplete, setAnimationComplete] = useState(false);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   // Terminal animation sequence
   useEffect(() => {
@@ -30,12 +32,12 @@ const Terminal = () => {
       }
 
       const currentLine = lines[currentLineIndex];
-      
+
       if (currentCharIndex < currentLine.text.length) {
         currentText += currentLine.text[currentCharIndex];
         setTerminalText(currentText);
         currentCharIndex++;
-        
+
         timeoutId = setTimeout(typeNextChar, currentLine.delay);
       } else {
         currentLineIndex++;
@@ -66,14 +68,18 @@ const Terminal = () => {
   }, [animationComplete]);
 
   return (
-    <div className="terminal max-w-2xl mx-auto my-6 opacity-0 animate-fade-in delay-200">
+    <div
+      onClick={() => navigate('/create-game')}
+      className="terminal max-w-2xl mx-auto my-6 opacity-0 animate-fade-in delay-200 cursor-pointer hover:ring-2 hover:ring-arcade-purple/50 hover:shadow-lg hover:shadow-arcade-purple/10 transition-all duration-300 rounded-lg"
+      title="Click to start creating a game"
+    >
       <div className="terminal-header">
         <div className="terminal-button close-button"></div>
         <div className="terminal-button minimize-button"></div>
         <div className="terminal-button maximize-button"></div>
         <div className="ml-auto text-xs text-gray-400">engine-arcade-terminal</div>
       </div>
-      <div 
+      <div
         ref={terminalRef}
         className="terminal-content text-sm md:text-base text-green-400 font-mono mt-2 h-40 overflow-hidden"
       >

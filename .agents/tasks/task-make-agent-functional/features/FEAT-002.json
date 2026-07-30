@@ -1,0 +1,30 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Implement state management and integrate the game engine into the app flow. Create a game state store, rewire the CreateGame page to actually generate games using the engine, and build the functional GameWorkspace with real game preview (iframe), working chat that modifies games, code view panel, and proper navigation flow.",
+  "status": "in_progress",
+  "steps": [
+    "Create src/store/gameStore.ts - Implement a React context-based game state store (GameProvider, useGameStore hook) that holds: currentGameCode (string - the generated HTML), gamePrompt (string), chatHistory (array of {role: 'user'|'assistant', content: string}), gameConfig (parsed config from prompt), isGenerating (boolean), selectedCategory (string|null). Provide actions: generateGame(prompt, category), modifyGame(chatMessage), resetGame(), setCategory().",
+    "Update src/App.tsx - Wrap the router with GameProvider so state is available across all pages.",
+    "Rewrite src/pages/CreateGame.tsx - Remove the simulated delay. On 'Create' click: call gameStore.generateGame(gameIdea, selectedCategory) which uses the engine to parse the prompt and generate real game code, then navigate to /workspace. Add more game categories: Platformer, Space Shooter, Racing, Puzzle, Snake, Flappy Bird, Breakout, RPG. Each category pre-fills a prompt hint.",
+    "Rewrite src/pages/GameWorkspace.tsx - Replace the static colored-div preview with an iframe that renders the game using srcdoc={currentGameCode}. Make the chat panel functional: user messages call modifyGame() which updates the game code and iframe in real-time. Show chat history. Implement 'Show Code' button to toggle a code viewer panel (display the raw HTML/JS with syntax highlighting using a simple pre/code element with styling). Implement 'Refresh' to re-render the iframe. Implement fullscreen toggle. Add a 'New Game' option.",
+    "Update src/pages/Index.tsx - Replace the email waitlist form with a direct 'Start Creating' button that navigates to /create-game. Keep the terminal animation and feature cards but make the terminal clickable to navigate to /create-game.",
+    "Remove src/components/EmailForm.tsx since the waitlist is replaced with direct navigation.",
+    "Update src/components/Terminal.tsx - Make the terminal component clickable, navigating to /create-game when clicked."
+  ],
+  "acceptance_criteria": [
+    "Game state persists between CreateGame and GameWorkspace pages via context",
+    "CreateGame page generates real game code and navigates to workspace",
+    "GameWorkspace shows a playable game in an iframe that responds to keyboard input",
+    "Chat messages in workspace actually modify the game (e.g., typing 'make it faster' speeds up the game)",
+    "Show Code button reveals the generated HTML/JS source code",
+    "Landing page has a direct path to game creation without email gate",
+    "At least 8 game categories are available in CreateGame",
+    "npm run build succeeds with no TypeScript errors"
+  ],
+  "verification": [
+    "export PATH=\"$HOME/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/Idea-to-game-AI-Agent && npm run build"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
