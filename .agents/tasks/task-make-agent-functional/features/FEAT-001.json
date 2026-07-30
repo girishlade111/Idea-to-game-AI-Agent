@@ -1,0 +1,27 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Build the core game engine and template system. Create a client-side game generation engine that can produce playable HTML5 Canvas games from text descriptions. Implement game templates for multiple genres (platformer, space shooter, racing, puzzle, snake, flappy bird, breakout, etc.) with a prompt-parsing system that selects and configures the appropriate template based on user input.",
+  "status": "in_progress",
+  "steps": [
+    "Create src/engine/gameTemplates.ts - Define a GameTemplate interface with fields: id, name, genre, keywords (for matching), generateCode (function that returns complete standalone HTML/JS game code as a string). Include at minimum 8 templates: platformer, space-shooter, snake, flappy-bird, breakout/pong, racing, puzzle-match3, and rpg-topdown.",
+    "Create src/engine/promptParser.ts - Implement a parsePrompt(prompt: string, category?: string) function that analyzes user text to determine: game genre, color scheme, difficulty, player character, enemies, environment. Use keyword matching and simple NLP-like heuristics (splitting words, matching against genre keywords, extracting adjectives for theming). Return a GameConfig object.",
+    "Create src/engine/gameGenerator.ts - Implement generateGame(config: GameConfig): string that takes a parsed config and selects the best matching template, then generates a complete standalone HTML document with embedded JavaScript canvas game code. The game must be fully playable in an iframe with keyboard/mouse controls. Each template should produce games with proper game loops, collision detection, scoring, and game-over/restart logic.",
+    "Create src/engine/gameModifier.ts - Implement modifyGame(currentCode: string, modification: string): string that can apply modifications to existing game code based on chat messages (e.g., 'make it faster', 'change color to red', 'add more enemies', 'make the player bigger'). Use string manipulation and regex to find and replace relevant values in the generated code.",
+    "Create src/engine/index.ts - Export all engine modules cleanly.",
+    "Each game template must produce a complete self-contained HTML document with: a canvas element, keyboard/mouse event listeners, a game loop using requestAnimationFrame, score display, game over detection, restart capability (press R or click), and responsive canvas sizing."
+  ],
+  "acceptance_criteria": [
+    "src/engine/ directory exists with gameTemplates.ts, promptParser.ts, gameGenerator.ts, gameModifier.ts, and index.ts",
+    "At least 8 distinct game templates are implemented, each producing playable HTML5 Canvas games",
+    "parsePrompt correctly identifies genre from prompts like 'make a space shooter', 'create a puzzle game', 'build a platformer'",
+    "generateGame returns valid HTML strings that can be rendered in an iframe",
+    "modifyGame can handle at least: speed changes, color changes, size changes, difficulty changes",
+    "npm run build succeeds with no TypeScript errors"
+  ],
+  "verification": [
+    "export PATH=\"$HOME/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/Idea-to-game-AI-Agent && npm run build"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
