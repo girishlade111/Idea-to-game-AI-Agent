@@ -1,9 +1,10 @@
 
 import { useState } from 'react';
-import { Sparkles, ArrowLeft } from 'lucide-react';
+import { Sparkles, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '@/store/gameStore';
+import Header from '@/components/Header';
 
 const gameCategories = [
   { id: 'platformer', name: 'Platformer', icon: '🏃', hint: 'A side-scrolling platform game with jumping and collecting...' },
@@ -19,6 +20,7 @@ const gameCategories = [
 const CreateGame = () => {
   const [gameIdea, setGameIdea] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const gameStore = useGameStore();
@@ -50,14 +52,19 @@ const CreateGame = () => {
     }
 
     const prompt = gameIdea.trim() || `Create a ${selectedCategory} game`;
-    gameStore.generateNewGame(prompt, selectedCategory || undefined);
+    setIsCreating(true);
 
-    toast({
-      title: "Game Created!",
-      description: "Your game has been generated. Have fun!",
-    });
+    // Brief delay for loading animation
+    setTimeout(() => {
+      gameStore.generateNewGame(prompt, selectedCategory || undefined);
 
-    navigate('/workspace');
+      toast({
+        title: "Game Created!",
+        description: "Your game has been generated. Have fun!",
+      });
+
+      navigate('/workspace');
+    }, 800);
   };
 
   const goBack = () => {
@@ -66,6 +73,18 @@ const CreateGame = () => {
 
   return (
     <div className="min-h-screen flex flex-col overflow-hidden bg-arcade-dark">
+      <Header />
+
+      {/* Loading overlay */}
+      {isCreating && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center">
+          <div className="flex flex-col items-center space-y-4">
+            <Loader2 size={48} className="animate-spin text-arcade-purple" />
+            <p className="text-white text-lg font-medium animate-pulse">Generating your game...</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex-1 container mx-auto px-4 py-8 max-w-6xl">
         {/* Back button */}
         <button
@@ -107,11 +126,11 @@ const CreateGame = () => {
           <div className="flex flex-wrap items-center justify-end mt-4">
             <button
               onClick={handleCreate}
-              disabled={gameStore.isGenerating}
+              disabled={isCreating}
               className="bg-arcade-purple hover:bg-opacity-90 text-white rounded-lg px-6 py-2 flex items-center font-medium disabled:opacity-70 transition-all"
             >
               <Sparkles size={18} className="mr-2" />
-              {gameStore.isGenerating ? 'Generating...' : 'Create Game'}
+              {isCreating ? 'Generating...' : 'Create Game'}
             </button>
           </div>
         </div>

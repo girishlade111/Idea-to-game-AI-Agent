@@ -21,6 +21,7 @@ interface GameActions {
   modifyCurrentGame: (chatMessage: string) => void;
   resetGame: () => void;
   setCategory: (category: string) => void;
+  updateLastAssistantMessage: (content: string) => void;
 }
 
 type GameStore = GameState & GameActions;
@@ -95,12 +96,27 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setState(prev => ({ ...prev, selectedCategory: category }));
   }, []);
 
+  const updateLastAssistantMessage = useCallback((content: string) => {
+    setState(prev => {
+      const updatedHistory = [...prev.chatHistory];
+      // Find the last assistant message and update it
+      for (let i = updatedHistory.length - 1; i >= 0; i--) {
+        if (updatedHistory[i].role === 'assistant') {
+          updatedHistory[i] = { ...updatedHistory[i], content };
+          break;
+        }
+      }
+      return { ...prev, chatHistory: updatedHistory };
+    });
+  }, []);
+
   const store: GameStore = {
     ...state,
     generateNewGame,
     modifyCurrentGame,
     resetGame,
     setCategory,
+    updateLastAssistantMessage,
   };
 
   return <GameContext.Provider value={store}>{children}</GameContext.Provider>;
