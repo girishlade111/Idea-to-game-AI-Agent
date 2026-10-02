@@ -1,64 +1,97 @@
+# Idea to Game — AI Game Agent
 
-## How can I edit this code?
+Turn a plain-English idea into a **playable browser game in seconds** — no coding required. Describe your game in natural language, and this app parses your prompt, picks a game template, generates a self-contained HTML game, and drops you into a live workspace where you can tweak, preview, and export it.
 
-There are several ways of editing your application.
+## Features
 
-**Use Lovable**
+- **Chat to Create** — Describe your game idea in natural language; the built-in prompt parser (`src/engine/promptParser.ts`) extracts genre, difficulty, colors, player/enemy types, environment, speed and size.
+- **Template-based game engine** — Genre templates (e.g. platformer) generate complete game code via `src/engine/gameTemplates.ts` and `src/engine/gameGenerator.ts`; modifier passes (`src/engine/gameModifier.ts`) refine the output.
+- **Game Workspace** — Live preview of the generated game with edit controls for config (colors, difficulty, speed, size).
+- **Game Gallery** — Browse and re-open previously generated games, persisted via the app store (`src/store/gameStore.tsx`).
+- **Export to standalone HTML** — `src/engine/exportGame.ts` wraps the generated game in a self-contained HTML file you can share or host anywhere.
+- **Chat-style guided flow** — Conversational agent responses (`src/engine/chatResponses.ts`) walk you through creation.
+- **Arcade-styled UI** — Retro dark theme with animated terminal hero, built on shadcn/ui, Radix primitives and Tailwind CSS.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/84322c50-98b7-4990-ba4e-2545accf5d91) and start prompting.
+## Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Vite 5** + **React 18** + **TypeScript**
+- **react-router-dom** for client-side routing
+- **Tailwind CSS** + **shadcn/ui** (Radix UI primitives)
+- **@tanstack/react-query**, **react-hook-form**, **zod**
+- Client-side only — no backend, no API keys, no database; all state in memory/local store
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Quick Start
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# 1. Clone
+git clone https://github.com/girishlade111/Idea-to-game-AI-Agent.git
+cd Idea-to-game-AI-Agent
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# 2. Install (Node.js 18+)
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 3. Run the dev server
 npm run dev
+# -> http://localhost:8080
+
+# 4. Build for production
+npm run build        # outputs to dist/
+npm run preview      # preview the production build
 ```
 
-**Edit a file directly in GitHub**
+## Project Structure
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+Idea-to-game-AI-Agent/
+├── index.html                 # Entry HTML
+├── vite.config.ts             # Vite config (base path for sub-path hosting)
+├── src/
+│   ├── main.tsx               # React entry
+│   ├── App.tsx                # Router + providers
+│   ├── pages/
+│   │   ├── Index.tsx          # Landing page (terminal hero, feature cards)
+│   │   ├── CreateGame.tsx     # Chat-driven creation flow
+│   │   ├── GameWorkspace.tsx  # Live preview + tweaks
+│   │   ├── GameGallery.tsx    # Saved games
+│   │   └── NotFound.tsx
+│   ├── engine/                # The "AI agent" core (all client-side)
+│   │   ├── promptParser.ts    # Natural-language -> GameConfig
+│   │   ├── gameTemplates.ts   # Genre templates (platformer, ...)
+│   │   ├── gameGenerator.ts   # Assembles playable game code
+│   │   ├── gameModifier.ts    # Post-generation refinements
+│   │   ├── chatResponses.ts   # Conversational agent replies
+│   │   ├── exportGame.ts      # Export as standalone HTML
+│   │   └── index.ts
+│   ├── store/gameStore.tsx    # App state (games, current config)
+│   ├── components/            # Header, Terminal, FeatureCard, ui/*
+│   └── hooks/ index.css App.css
+└── public/                    # favicon, fonts, og-image
+```
 
-**Use GitHub Codespaces**
+## How It Works
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. You type an idea, e.g. *"a hard space shooter with a blue ship"*.
+2. `promptParser` turns that into a `GameConfig` (genre, colors, difficulty, speed…).
+3. `gameGenerator` picks the matching template and emits playable game JavaScript, wrapped as a full HTML document by `wrapGame()`.
+4. The workspace renders it in an iframe; you tweak settings or ask the chat agent to modify it.
+5. Export the final game as a standalone `.html` file.
 
-## What technologies are used for this project?
+## Deployment
 
-This project is built with .
+Static site — no server needed:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **GitHub Pages**: production build is published from the `gh-pages` branch to `https://girishlade111.github.io/Idea-to-game-AI-Agent/`.
+- The Vite `base` and router `basename` are configured for sub-path hosting, and `404.html` mirrors `index.html` so deep links (e.g. `/create-game`, `/gallery`) work.
+- Any static host (Netlify, Cloudflare Pages, Vercel) works: `npm run build` → serve `dist/`.
 
-## How can I deploy this project?
+## Environment Variables
 
-Simply open [Lovable](https://lovable.dev/projects/84322c50-98b7-4990-ba4e-2545accf5d91) and click on Share -> Publish.
+None. The app is fully client-side and calls no external APIs.
 
-## I want to use a custom domain - is that possible?
+## License
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+Free to use and learn from.
+
+---
+
+Built by Girish Lade — [ladestack.in](https://ladestack.in)
